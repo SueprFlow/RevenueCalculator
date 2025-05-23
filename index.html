@@ -1,424 +1,429 @@
 <head>
-  <title>Superflow Earnings Calculator</title>
-  <style>
-    input {
-      width: 100%;
-      border-radius: 10px;
-      border: none;
-      padding: 8px;
-      background-color: #1E4D4E;
-      color: #ffffff;
-    }
+    <title>Superflow Earnings Calculator</title>
+    <style>
+        input {
+            width: 100%;
+            border-radius: 10px;
+            border: none;
+            padding: 8px;
+            background-color: #1E4D4E;
+            color: #ffffff;
+        }
 
-    input::placeholder {
-      color: #7DADB1;
-    }
+        input::placeholder {
+            color: #7DADB1;
+        }
 
-    button {
-      padding: 8px 24px;
-      cursor: pointer;
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      border-radius: 10px;
-      letter-spacing: 1px;
-      font-weight: 400;
-    }
+        button {
+            padding: 8px 24px;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
 
 
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 8px;
-      border-radius: 5px;
-      background: #7dadb1;
-      /* track color */
-      outline: none;
-      margin-top: 5px;
-      transition: background 0.3s;
-    }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #7dadb1;
+            /* track color */
+            outline: none;
+            margin-top: 5px;
+            transition: background 0.3s;
+        }
 
-    /* Track fill before thumb (for Chrome) */
-    input[type="range"]::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #7dadb1;
-      border-radius: 5px;
-    }
+        /* Track fill before thumb (for Chrome) */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            background: #7dadb1;
+            border-radius: 5px;
+        }
 
-    /* Thumb (handle) for Chrome */
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      background: #ffffff;
-      border: 2px solid #1E4D4E;
-      border-radius: 50%;
-      cursor: pointer;
-      margin-top: -6px;
-      /* aligns thumb vertically */
-      transition: background 0.3s, border 0.3s;
-    }
+        /* Thumb (handle) for Chrome */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border: 2px solid #1E4D4E;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px;
+            /* aligns thumb vertically */
+            transition: background 0.3s, border 0.3s;
+        }
 
-    input[type="range"]::-webkit-slider-thumb:hover {
-      background: #dff;
-      border-color: #123;
-    }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #dff;
+            border-color: #123;
+        }
 
-    /* Firefox styles */
-    input[type="range"]::-moz-range-track {
-      height: 8px;
-      background: #7dadb1;
-      border-radius: 5px;
-    }
+        /* Firefox styles */
+        input[type="range"]::-moz-range-track {
+            height: 8px;
+            background: #7dadb1;
+            border-radius: 5px;
+        }
 
-    input[type="range"]::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: #ffffff;
-      border: 2px solid #1E4D4E;
-      border-radius: 50%;
-      cursor: pointer;
-    }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border: 2px solid #1E4D4E;
+            border-radius: 50%;
+            cursor: pointer;
+        }
 
-    @media (max-width: 900px) {
-      .container {
-        flex-direction: column;
-      }
-    }
-  </style>
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <h1>Superflow Earnings Calculator</h1>
-  <button onclick="copyShareableLink()">Copy Shareable Link</button>
+    <h1>Superflow Earnings Calculator</h1>
+    <button onclick="copyShareableLink()">Copy Shareable Link</button>
 
-  <div class="container">
-    <div class="input-section">
-      <label>1. Token Name</label>
-      <div style="position: relative; display: flex; align-items: center;">
-        <input list="tokenList" id="tokenName" placeholder="e.g., ETH" oninput="updateTokenIcon(); calculate()"
-          style="padding-right: 40px;" />
-        <img id="tokenIcon"
-          src="https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg"
-          alt="Token Icon" style="position: absolute; right: 10px; width: 20px; height: 20px; pointer-events: none;" />
-      </div>
+    <div class="container">
+        <div class="input-section">
+            <label>1. Token Name</label>
+            <div style="position: relative; display: flex; align-items: center;">
+                <input list="tokenList" id="tokenName" placeholder="e.g., ETH" oninput="updateTokenIcon(); calculate()"
+                    style="padding-right: 40px;" />
+                <img id="tokenIcon"
+                    src="https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg"
+                    alt="Token Icon"
+                    style="position: absolute; right: 10px; width: 20px; height: 20px; pointer-events: none;" />
+            </div>
 
-      <datalist id="tokenList">
-        <option value="ETH">
-        <option value="BTC">
-        <option value="USDC">
-      </datalist>
+            <datalist id="tokenList">
+                <option value="ETH">
+                <option value="BTC">
+                <option value="USDC">
+            </datalist>
 
-      <label>2. $ Estimated Daily Volume (in Millions)</label>
-      <input type="number" id="volume" placeholder="e.g., 1.5" step="0.01" min="0" oninput="calculate()" />
+            <label>2. $ Estimated Daily Volume (in Millions)</label>
+            <input type="number" id="volume" placeholder="e.g., 1.5" step="0.01" min="0" oninput="calculate()" />
 
-      <label>3. Total BPS (Open + Close)</label>
-      <input type="number" id="bps" value="20" placeholder="e.g., 20" step="1" min="0" oninput="calculate()" />
+            <label>3. Total BPS (Open + Close)</label>
+            <input type="number" id="bps" value="20" placeholder="e.g., 20" step="1" min="0" oninput="calculate()" />
 
-      <label>4. Referral Fee (%)</label>
-      <input type="range" id="referralFee" value="10" min="0" max="10" step="1"
-        oninput="document.getElementById('referralValue').textContent = this.value + '%'; calculate();" />
-      <span id="referralValue">10%</span>
+            <label>4. Referral Fee (%)</label>
+            <input type="range" id="referralFee" value="10" min="0" max="10" step="1"
+                oninput="document.getElementById('referralValue').textContent = this.value + '%'; calculate();" />
+            <span id="referralValue">10%</span>
 
-      <label>5. Token Buyback (%)</label>
-      <input type="range" id="buyback" value="0" min="0" max="90" step="1"
-        oninput="document.getElementById('buybackValue').textContent = this.value + '%'; calculate();" />
-      <span id="buybackValue">0%</span>
+            <label>5. Token Buyback (%)</label>
+            <input type="range" id="buyback" value="0" min="0" max="90" step="1"
+                oninput="document.getElementById('buybackValue').textContent = this.value + '%'; calculate();" />
+            <span id="buybackValue">0%</span>
 
-      <button onclick="Refresh()">Refresh</button>
-
-
-
+            <button onclick="Refresh()">Refresh</button>
 
 
-      <label>6. Liquidated Notional (%)</label>
-      <input type="range" id="liquidatedNotional" value="3" min="0" max="100" step="0.1"
-        oninput="document.getElementById('liquidatedNotionalValue').textContent = this.value + '%'; calculate();" />
-      <span id="liquidatedNotionalValue">3%</span>
 
-      <label>7. Avg Leverage</label>
-      <input type="number" id="avgLeverage" value="20" step="1" min="1" oninput="calculate()" />
 
-      <label>8. Maintenance Margin Steps (%)</label>
-      <input type="range" id="maintenanceMarginSteps" value="1" min="0" max="100" step="0.1"
-        oninput="document.getElementById('maintenanceMarginStepsValue').textContent = this.value + '%'; calculate();" />
-      <span id="maintenanceMarginStepsValue">1%</span>
 
-      <label>9. Avg Funding (%)</label>
-      <input type="range" id="avgFunding" value="3" min="0" max="100" step="0.1"
-        oninput="document.getElementById('avgFundingValue').textContent = this.value + '%'; calculate();" />
-      <span id="avgFundingValue">3%</span>
+            <label>6. Liquidated Notional (%)</label>
+            <input type="range" id="liquidatedNotional" value="3" min="0" max="100" step="0.1"
+                oninput="document.getElementById('liquidatedNotionalValue').textContent = this.value + '%'; calculate();" />
+            <span id="liquidatedNotionalValue">3%</span>
 
-      <label>10. Avg OI (%)</label>
-      <input type="range" id="avgOI" value="100" min="0" max="1000" step="1"
-        oninput="document.getElementById('avgOIValue').textContent = this.value + '%'; calculate();" />
-      <span id="avgOIValue">100%</span>
+            <label>7. Avg Leverage</label>
+            <input type="number" id="avgLeverage" value="20" step="1" min="1" oninput="calculate()" />
+
+            <label>8. Maintenance Margin Steps (%)</label>
+            <input type="range" id="maintenanceMarginSteps" value="1" min="0" max="100" step="0.1"
+                oninput="document.getElementById('maintenanceMarginStepsValue').textContent = this.value + '%'; calculate();" />
+            <span id="maintenanceMarginStepsValue">1%</span>
+
+            <label>9. Avg Funding (%)</label>
+            <input type="range" id="avgFunding" value="30" min="25" max="100" step="0.1"
+                oninput="document.getElementById('avgFundingValue').textContent = this.value + '%'; calculate();" />
+            <span id="avgFundingValue">3%</span>
+
+            <label>10. Avg OI (%)</label>
+            <input type="range" id="avgOI" value="100" min="0" max="1000" step="1"
+                oninput="document.getElementById('avgOIValue').textContent = this.value + '%'; calculate();" />
+            <span id="avgOIValue">100%</span>
+
+        </div>
+
+
+        <div class="output-section">
+            <p><strong>Calculated LP Share:</strong> <span id="lpSharePercent">–</span></p>
+
+            <h2>Summary: Expected Total Earnings</h2>
+            <p><strong>Superflow Fee Share:</strong> <span id="feeLow">–</span> → <span id="feeHigh">–</span></p>
+            <p><strong>Superflow MM Share:</strong> <span id="mmLow">–</span> → <span id="mmHigh">–</span></p>
+            <p><strong>Superflow Funding Share:</strong> <span id="fundingLow">–</span> → <span
+                    id="fundingHigh">–</span></p>
+            <p><strong>Total Solver Revenue:</strong> <span id="solverRevenueLow">–</span> → <span
+                    id="solverRevenueHigh">–</span></p>
+
+            <h2>Subtractions</h2>
+            <p><strong>Solver Management:</strong> <span id="solverManageLow">–</span> → <span
+                    id="solverManageHigh">–</span>
+            </p>
+            <p><strong>Referral Fees:</strong> <span id="referralLow">–</span> → <span id="referralHigh">–</span></p>
+            <p><strong>Token Buybacks:</strong> <span id="buybackLow">–</span> → <span id="buybackHigh">–</span></p>
+            <p><strong>Total Subtractions:</strong> <span id="subtractionsLow">–</span> → <span
+                    id="subtractionsHigh">–</span>
+            </p>
+
+            <h2>LP Share</h2>
+            <p><strong>Final LP Share Value:</strong> <span id="lpShareLow">–</span> → <span id="lpShareHigh">–</span>
+            </p>
+        </div>
 
     </div>
 
+    <script>
 
-    <div class="output-section">
-      <p><strong>Calculated LP Share:</strong> <span id="lpSharePercent">–</span></p>
+        function disableInputsIfLocked() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('locked') === 'true') {
+                const inputs = document.querySelectorAll('input, select');
+                inputs.forEach(el => {
+                    el.disabled = true;
+                    el.style.opacity = '0.5';
+                    el.style.pointerEvents = 'none';
+                });
 
-      <h2>Summary: Expected Total Earnings</h2>
-      <p><strong>Superflow Fee Share:</strong> <span id="feeLow">–</span> → <span id="feeHigh">–</span></p>
-      <p><strong>Superflow MM Share:</strong> <span id="mmLow">–</span> → <span id="mmHigh">–</span></p>
-      <p><strong>Superflow Funding Share:</strong> <span id="fundingLow">–</span> → <span id="fundingHigh">–</span></p>
-      <p><strong>Total Solver Revenue:</strong> <span id="solverRevenueLow">–</span> → <span
-          id="solverRevenueHigh">–</span></p>
-
-      <h2>Subtractions</h2>
-      <p><strong>Solver Management:</strong> <span id="solverManageLow">–</span> → <span id="solverManageHigh">–</span>
-      </p>
-      <p><strong>Referral Fees:</strong> <span id="referralLow">–</span> → <span id="referralHigh">–</span></p>
-      <p><strong>Token Buybacks:</strong> <span id="buybackLow">–</span> → <span id="buybackHigh">–</span></p>
-      <p><strong>Total Subtractions:</strong> <span id="subtractionsLow">–</span> → <span id="subtractionsHigh">–</span>
-      </p>
-
-      <h2>LP Share</h2>
-      <p><strong>Final LP Share Value:</strong> <span id="lpShareLow">–</span> → <span id="lpShareHigh">–</span></p>
-    </div>
-
-  </div>
-
-  <script>
-
-    function disableInputsIfLocked() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('locked') === 'true') {
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(el => {
-          el.disabled = true;
-          el.style.opacity = '0.5';
-          el.style.pointerEvents = 'none';
-        });
-
-        // Optionally hide all buttons
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-          button.style.display = 'none';
-        });
-      }
-    }
+                // Optionally hide all buttons
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(button => {
+                    button.style.display = 'none';
+                });
+            }
+        }
 
 
-    window.onload = function () {
-      const params = new URLSearchParams(window.location.search);
-      // Load all fields (same as you already do)
-      if (params.has('token')) document.getElementById('tokenName').value = params.get('token');
-      if (params.has('volume')) document.getElementById('volume').value = params.get('volume');
-      if (params.has('bps')) document.getElementById('bps').value = params.get('bps');
-      if (params.has('referral')) {
-        document.getElementById('referralFee').value = params.get('referral');
-        document.getElementById('referralValue').textContent = params.get('referral') + '%';
-      }
-      if (params.has('buyback')) {
-        document.getElementById('buyback').value = params.get('buyback');
-        document.getElementById('buybackValue').textContent = params.get('buyback') + '%';
-      }
-      if (params.has('liquidatedNotional')) {
-        document.getElementById('liquidatedNotional').value = params.get('liquidatedNotional');
-        document.getElementById('liquidatedNotionalValue').textContent = params.get('liquidatedNotional') + '%';
-      }
-      if (params.has('avgLeverage')) document.getElementById('avgLeverage').value = params.get('avgLeverage');
-      if (params.has('maintenanceMarginSteps')) {
-        document.getElementById('maintenanceMarginSteps').value = params.get('maintenanceMarginSteps');
-        document.getElementById('maintenanceMarginStepsValue').textContent = params.get('maintenanceMarginSteps') + '%';
-      }
-      if (params.has('avgFunding')) {
-        document.getElementById('avgFunding').value = params.get('avgFunding');
-        document.getElementById('avgFundingValue').textContent = params.get('avgFunding') + '%';
-      }
-      if (params.has('avgOI')) {
-        document.getElementById('avgOI').value = params.get('avgOI');
-        document.getElementById('avgOIValue').textContent = params.get('avgOI') + '%';
-      }
+        window.onload = function () {
+            const params = new URLSearchParams(window.location.search);
+            // Load all fields (same as you already do)
+            if (params.has('token')) document.getElementById('tokenName').value = params.get('token');
+            if (params.has('volume')) document.getElementById('volume').value = params.get('volume');
+            if (params.has('bps')) document.getElementById('bps').value = params.get('bps');
+            if (params.has('referral')) {
+                document.getElementById('referralFee').value = params.get('referral');
+                document.getElementById('referralValue').textContent = params.get('referral') + '%';
+            }
+            if (params.has('buyback')) {
+                document.getElementById('buyback').value = params.get('buyback');
+                document.getElementById('buybackValue').textContent = params.get('buyback') + '%';
+            }
+            if (params.has('liquidatedNotional')) {
+                document.getElementById('liquidatedNotional').value = params.get('liquidatedNotional');
+                document.getElementById('liquidatedNotionalValue').textContent = params.get('liquidatedNotional') + '%';
+            }
+            if (params.has('avgLeverage')) document.getElementById('avgLeverage').value = params.get('avgLeverage');
+            if (params.has('maintenanceMarginSteps')) {
+                document.getElementById('maintenanceMarginSteps').value = params.get('maintenanceMarginSteps');
+                document.getElementById('maintenanceMarginStepsValue').textContent = params.get('maintenanceMarginSteps') + '%';
+            }
+            if (params.has('avgFunding')) {
+                document.getElementById('avgFunding').value = params.get('avgFunding');
+                document.getElementById('avgFundingValue').textContent = params.get('avgFunding') + '%';
+            }
+            if (params.has('avgOI')) {
+                document.getElementById('avgOI').value = params.get('avgOI');
+                document.getElementById('avgOIValue').textContent = params.get('avgOI') + '%';
+            }
 
-      updateTokenIcon();
-      calculate();
-      disableInputsIfLocked();
-    }
+            updateTokenIcon();
+            calculate();
+            disableInputsIfLocked();
+        }
 
-    function updateTokenIcon() {
-      const token = document.getElementById("tokenName").value.toUpperCase();
-      const iconMap = {
-        ETH: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd87d91c8ab5fc1efdbaa_ethereum-eth-logo-diamond-purple.svg",
-        BTC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682ccadc604c4335a653305c_BTCicon.svg",
-        USDC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd8a61357199af865b614_usd-coin-usdc-logo.svg",
-      };
+        function updateTokenIcon() {
+            const token = document.getElementById("tokenName").value.toUpperCase();
+            const iconMap = {
+                ETH: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd87d91c8ab5fc1efdbaa_ethereum-eth-logo-diamond-purple.svg",
+                BTC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682ccadc604c4335a653305c_BTCicon.svg",
+                USDC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd8a61357199af865b614_usd-coin-usdc-logo.svg",
+            };
 
-      const defaultIcon = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
-      const iconURL = iconMap[token] || defaultIcon;
-      document.getElementById("tokenIcon").src = iconURL;
-    }
+            const defaultIcon = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
+            const iconURL = iconMap[token] || defaultIcon;
+            document.getElementById("tokenIcon").src = iconURL;
+        }
 
-    function Refresh() {
-      // Reset input values
-      document.getElementById('tokenName').value = '';
-      document.getElementById('volume').value = '';
-      document.getElementById('bps').value = 20;
+        function Refresh() {
+            // Reset input values
+            document.getElementById('tokenName').value = '';
+            document.getElementById('volume').value = '';
+            document.getElementById('bps').value = 20;
 
-      document.getElementById('referralFee').value = 10;
-      document.getElementById('referralValue').textContent = '10%';
+            document.getElementById('referralFee').value = 10;
+            document.getElementById('referralValue').textContent = '10%';
 
-      document.getElementById('buyback').value = 0;
-      document.getElementById('buybackValue').textContent = '0%';
-      // Reset new parameters
-      document.getElementById('liquidatedNotional').value = 3;
-      document.getElementById('liquidatedNotionalValue').textContent = '3%';
+            document.getElementById('buyback').value = 0;
+            document.getElementById('buybackValue').textContent = '0%';
+            // Reset new parameters
+            document.getElementById('liquidatedNotional').value = 3;
+            document.getElementById('liquidatedNotionalValue').textContent = '3%';
 
-      document.getElementById('avgLeverage').value = 20;
+            document.getElementById('avgLeverage').value = 20;
 
-      document.getElementById('maintenanceMarginSteps').value = 1;
-      document.getElementById('maintenanceMarginStepsValue').textContent = '1%';
+            document.getElementById('maintenanceMarginSteps').value = 1;
+            document.getElementById('maintenanceMarginStepsValue').textContent = '1%';
 
-      document.getElementById('avgFunding').value = 3;
-      document.getElementById('avgFundingValue').textContent = '3%';
+            document.getElementById('avgFunding').value = 3;
+            document.getElementById('avgFundingValue').textContent = '3%';
 
-      document.getElementById('avgOI').value = 100;
-      document.getElementById('avgOIValue').textContent = '100%';
+            document.getElementById('avgOI').value = 100;
+            document.getElementById('avgOIValue').textContent = '100%';
 
-      // Reset output values
-      const outputIds = [
-        'feeLow', 'feeHigh', 'mmLow', 'mmHigh', 'fundingLow', 'fundingHigh',
-        'solverRevenueLow', 'solverRevenueHigh',
-        'solverManageLow', 'solverManageHigh',
-        'referralLow', 'referralHigh',
-        'buybackLow', 'buybackHigh',
-        'subtractionsLow', 'subtractionsHigh',
-        'lpShareLow', 'lpShareHigh',
-        'lpSharePercent'
-      ];
+            // Reset output values
+            const outputIds = [
+                'feeLow', 'feeHigh', 'mmLow', 'mmHigh', 'fundingLow', 'fundingHigh',
+                'solverRevenueLow', 'solverRevenueHigh',
+                'solverManageLow', 'solverManageHigh',
+                'referralLow', 'referralHigh',
+                'buybackLow', 'buybackHigh',
+                'subtractionsLow', 'subtractionsHigh',
+                'lpShareLow', 'lpShareHigh',
+                'lpSharePercent'
+            ];
 
-      outputIds.forEach(id => {
-        document.getElementById(id).textContent = '–';
-      });
+            outputIds.forEach(id => {
+                document.getElementById(id).textContent = '–';
+            });
 
-      document.getElementById("tokenIcon").src = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
+            document.getElementById("tokenIcon").src = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
 
 
-    }
+        }
 
-    function formatNumberDollar(num) {
-      return "$" + num.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
+        function formatNumberDollar(num) {
+            return "$" + num.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
 
 
-    function calculate() {
-      //inputs 
-      const volume = parseFloat(document.getElementById('volume').value);
-      const bps = parseFloat(document.getElementById('bps').value);
-      const referralFee = parseFloat(document.getElementById('referralFee').value) * 0.01;
-      const buyback = parseFloat(document.getElementById('buyback').value) * 0.01;
+        function calculate() {
+            //inputs 
+            const volume = parseFloat(document.getElementById('volume').value);
+            const bps = parseFloat(document.getElementById('bps').value);
+            const referralFee = parseFloat(document.getElementById('referralFee').value) * 0.01;
+            const buyback = parseFloat(document.getElementById('buyback').value) * 0.01;
 
-      const liquidatedNotional = parseFloat(document.getElementById('liquidatedNotional').value) * 0.01;
-      const avgLeverage = parseFloat(document.getElementById('avgLeverage').value);
-      const maintenanceMarginSteps = parseFloat(document.getElementById('maintenanceMarginSteps').value) * 0.01;
-      const avgFunding = parseFloat(document.getElementById('avgFunding').value);
-      const avgOI = parseFloat(document.getElementById('avgOI').value) * 0.01;
-
-
-      //calculations
-      var lpShare = 0.85 - referralFee;
-      let monthlyVolume = volume * 30;
-      let totalPerpSolverFees = bps * 0.6;
-      let totalPerpProtocolFees = bps * 0.4;
-      let totalLiquidatedNotional = monthlyVolume * 1000000 * liquidatedNotional;
-      let collateralProvided = totalLiquidatedNotional / avgLeverage;
-      let PlattformFeesEarntFrontEnd = monthlyVolume * 1000000 * (totalPerpProtocolFees / 10000);
-      let solverFeesEarnt = monthlyVolume * 1000000 * (totalPerpSolverFees / 10000);
-      let avgMaintenanceMargin = avgLeverage * maintenanceMarginSteps;
+            const liquidatedNotional = parseFloat(document.getElementById('liquidatedNotional').value) * 0.01;
+            const avgLeverage = parseFloat(document.getElementById('avgLeverage').value);
+            const maintenanceMarginSteps = parseFloat(document.getElementById('maintenanceMarginSteps').value) * 0.01;
+            const avgFunding = parseFloat(document.getElementById('avgFunding').value);
+            const avgOI = parseFloat(document.getElementById('avgOI').value) * 0.01;
 
 
-      let liquidationFeeEarntLowerBound = collateralProvided * avgMaintenanceMargin;
-      let liquidationFeeEarntUpperBound = (solverFeesEarnt + PlattformFeesEarntFrontEnd) * 0.3333;
-
-      let fundingLow = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.2;
-      let fundingHigh = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.75;
-
-      let feeLow = solverFeesEarnt;
-      let feeHigh = solverFeesEarnt;
-
-      let mmLow = liquidationFeeEarntLowerBound;
-      let mmHigh = liquidationFeeEarntUpperBound;
-
-      let solverRevenueLow = feeLow + mmLow + fundingLow;
-      let solverRevenueHigh = feeHigh + mmHigh + fundingHigh;
-
-      let solverManageLow = solverRevenueLow * (1 - (lpShare + referralFee));
-      let solverManageHigh = solverRevenueHigh * (1 - (lpShare + referralFee));
-
-      let referralLow = solverRevenueLow * referralFee;
-      let referralHigh = solverRevenueHigh * referralFee;
-
-      let buybackLow = (solverRevenueLow - referralLow - solverManageLow) * buyback;
-      let buybackHigh = (solverRevenueHigh - referralHigh - solverManageHigh) * buyback;
-
-      let subtractionsLow = buybackLow + referralLow + solverManageLow;
-      let subtractionsHigh = buybackHigh + referralHigh + solverManageHigh;
-
-      let lpShareLow = solverRevenueLow - (buybackLow + referralLow + solverManageLow);
-      let lpShareHigh = solverRevenueHigh - (buybackHigh + referralHigh + solverManageHigh);
+            //calculations
+            var lpShare = 0.85 - referralFee;
+            let monthlyVolume = volume * 30;
+            let totalPerpSolverFees = bps * 0.6;
+            let totalPerpProtocolFees = bps * 0.4;
+            let totalLiquidatedNotional = monthlyVolume * 1000000 * liquidatedNotional;
+            let collateralProvided = totalLiquidatedNotional / avgLeverage;
+            let PlattformFeesEarntFrontEnd = monthlyVolume * 1000000 * (totalPerpProtocolFees / 10000);
+            let solverFeesEarnt = monthlyVolume * 1000000 * (totalPerpSolverFees / 10000);
+            let avgMaintenanceMargin = avgLeverage * maintenanceMarginSteps;
 
 
+            let liquidationFeeEarntLowerBound = collateralProvided * avgMaintenanceMargin;
+            let liquidationFeeEarntUpperBound = (solverFeesEarnt + PlattformFeesEarntFrontEnd) * 0.3333;
 
-      // Validate input ranges (optional fallback)
-      if (volume < 0 || bps < 0 || referralFee < 0 || referralFee > 1 || buyback < 0 || buyback > 1 || lpShare < 0 || lpShare > 1) {
-        alert("Please enter valid values:\n- No negatives\n- % fields must be between 0 and 100");
-        return;
-      }
+            let fundingLow = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.2;
+            let fundingHigh = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.75;
 
-      document.getElementById('feeLow').textContent = formatNumberDollar(feeLow);
-      document.getElementById('feeHigh').textContent = formatNumberDollar(feeHigh);
-      document.getElementById('mmLow').textContent = formatNumberDollar(mmLow);
-      document.getElementById('mmHigh').textContent = formatNumberDollar(mmHigh);
-      document.getElementById('fundingLow').textContent = formatNumberDollar(fundingLow);
-      document.getElementById('fundingHigh').textContent = formatNumberDollar(fundingHigh);
-      document.getElementById('solverRevenueLow').textContent = formatNumberDollar(solverRevenueLow);
-      document.getElementById('solverRevenueHigh').textContent = formatNumberDollar(solverRevenueHigh);
-      document.getElementById('solverManageLow').textContent = formatNumberDollar(solverManageLow);
-      document.getElementById('solverManageHigh').textContent = formatNumberDollar(solverManageHigh);
-      document.getElementById('referralLow').textContent = formatNumberDollar(referralLow);
-      document.getElementById('referralHigh').textContent = formatNumberDollar(referralHigh);
-      document.getElementById('buybackLow').textContent = formatNumberDollar(buybackLow);
-      document.getElementById('subtractionsLow').textContent = formatNumberDollar(subtractionsLow);
-      document.getElementById('subtractionsHigh').textContent = formatNumberDollar(subtractionsHigh);
+            let feeLow = solverFeesEarnt;
+            let feeHigh = solverFeesEarnt;
 
-      document.getElementById('lpSharePercent').textContent = lpShare * 100 + "%";
+            let mmLow = liquidationFeeEarntLowerBound;
+            let mmHigh = liquidationFeeEarntUpperBound;
 
-      document.getElementById('buybackHigh').textContent = formatNumberDollar(buybackHigh);
-      document.getElementById('lpShareLow').textContent = formatNumberDollar(lpShareLow);
-      document.getElementById('lpShareHigh').textContent = formatNumberDollar(lpShareHigh);
-    }
+            let solverRevenueLow = feeLow + mmLow + fundingLow;
+            let solverRevenueHigh = feeHigh + mmHigh + fundingHigh;
 
+            let solverManageLow = solverRevenueLow * (1 - (lpShare + referralFee));
+            let solverManageHigh = solverRevenueHigh * (1 - (lpShare + referralFee));
 
-    function copyShareableLink() {
-      const token = encodeURIComponent(document.getElementById('tokenName').value);
-      const volume = encodeURIComponent(document.getElementById('volume').value);
-      const bps = encodeURIComponent(document.getElementById('bps').value);
-      const referral = encodeURIComponent(document.getElementById('referralFee').value);
-      const buyback = encodeURIComponent(document.getElementById('buyback').value);
-      const liquidatedNotional = encodeURIComponent(document.getElementById('liquidatedNotional').value);
-      const avgLeverage = encodeURIComponent(document.getElementById('avgLeverage').value);
-      const maintenanceMarginSteps = encodeURIComponent(document.getElementById('maintenanceMarginSteps').value);
-      const avgFunding = encodeURIComponent(document.getElementById('avgFunding').value);
-      const avgOI = encodeURIComponent(document.getElementById('avgOI').value);
+            let referralLow = solverRevenueLow * referralFee;
+            let referralHigh = solverRevenueHigh * referralFee;
 
-      const url = `${location.origin}${location.pathname}?token=${token}&volume=${volume}&bps=${bps}&referral=${referral}&buyback=${buyback}&liquidatedNotional=${liquidatedNotional}&avgLeverage=${avgLeverage}&maintenanceMarginSteps=${maintenanceMarginSteps}&avgFunding=${avgFunding}&avgOI=${avgOI}&locked=true`;
+            let buybackLow = (solverRevenueLow - referralLow - solverManageLow) * buyback;
+            let buybackHigh = (solverRevenueHigh - referralHigh - solverManageHigh) * buyback;
 
-      navigator.clipboard.writeText(url).then(() => {
-        alert("Locked link copied to clipboard!");
-      }).catch(() => {
-        alert("Failed to copy link.");
-      });
-    }
+            let subtractionsLow = buybackLow + referralLow + solverManageLow;
+            let subtractionsHigh = buybackHigh + referralHigh + solverManageHigh;
+
+            let lpShareLow = solverRevenueLow - (buybackLow + referralLow + solverManageLow);
+            let lpShareHigh = solverRevenueHigh - (buybackHigh + referralHigh + solverManageHigh);
 
 
-  </script>
+
+            // Validate input ranges (optional fallback)
+            if (volume < 0 || bps < 0 || referralFee < 0 || referralFee > 1 || buyback < 0 || buyback > 1 || lpShare < 0 || lpShare > 1) {
+                alert("Please enter valid values:\n- No negatives\n- % fields must be between 0 and 100");
+                return;
+            }
+
+            document.getElementById('feeLow').textContent = formatNumberDollar(feeLow);
+            document.getElementById('feeHigh').textContent = formatNumberDollar(feeHigh);
+            document.getElementById('mmLow').textContent = formatNumberDollar(mmLow);
+            document.getElementById('mmHigh').textContent = formatNumberDollar(mmHigh);
+            document.getElementById('fundingLow').textContent = formatNumberDollar(fundingLow);
+            document.getElementById('fundingHigh').textContent = formatNumberDollar(fundingHigh);
+            document.getElementById('solverRevenueLow').textContent = formatNumberDollar(solverRevenueLow);
+            document.getElementById('solverRevenueHigh').textContent = formatNumberDollar(solverRevenueHigh);
+            document.getElementById('solverManageLow').textContent = formatNumberDollar(solverManageLow);
+            document.getElementById('solverManageHigh').textContent = formatNumberDollar(solverManageHigh);
+            document.getElementById('referralLow').textContent = formatNumberDollar(referralLow);
+            document.getElementById('referralHigh').textContent = formatNumberDollar(referralHigh);
+            document.getElementById('buybackLow').textContent = formatNumberDollar(buybackLow);
+            document.getElementById('subtractionsLow').textContent = formatNumberDollar(subtractionsLow);
+            document.getElementById('subtractionsHigh').textContent = formatNumberDollar(subtractionsHigh);
+
+            document.getElementById('lpSharePercent').textContent = lpShare * 100 + "%";
+
+            document.getElementById('buybackHigh').textContent = formatNumberDollar(buybackHigh);
+            document.getElementById('lpShareLow').textContent = formatNumberDollar(lpShareLow);
+            document.getElementById('lpShareHigh').textContent = formatNumberDollar(lpShareHigh);
+        }
+
+
+        function copyShareableLink() {
+            const token = encodeURIComponent(document.getElementById('tokenName').value);
+            const volume = encodeURIComponent(document.getElementById('volume').value);
+            const bps = encodeURIComponent(document.getElementById('bps').value);
+            const referral = encodeURIComponent(document.getElementById('referralFee').value);
+            const buyback = encodeURIComponent(document.getElementById('buyback').value);
+            const liquidatedNotional = encodeURIComponent(document.getElementById('liquidatedNotional').value);
+            const avgLeverage = encodeURIComponent(document.getElementById('avgLeverage').value);
+            const maintenanceMarginSteps = encodeURIComponent(document.getElementById('maintenanceMarginSteps').value);
+            const avgFunding = encodeURIComponent(document.getElementById('avgFunding').value);
+            const avgOI = encodeURIComponent(document.getElementById('avgOI').value);
+
+            const url = `${location.origin}${location.pathname}?token=${token}&volume=${volume}&bps=${bps}&referral=${referral}&buyback=${buyback}&liquidatedNotional=${liquidatedNotional}&avgLeverage=${avgLeverage}&maintenanceMarginSteps=${maintenanceMarginSteps}&avgFunding=${avgFunding}&avgOI=${avgOI}&locked=true`;
+
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Locked link copied to clipboard!");
+            }).catch(() => {
+                alert("Failed to copy link.");
+            });
+        }
+
+
+    </script>
 </body>
