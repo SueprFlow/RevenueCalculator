@@ -45,6 +45,13 @@
             border-radius: 5px;
         }
 
+        .tom-select select {
+            opacity: 0 !important;
+            position: absolute;
+            pointer-events: none;
+            height: 0;
+        }
+
         /* Thumb (handle) for Chrome */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -87,78 +94,73 @@
             }
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
 </head>
 
 <body>
 
     <h1>Superflow Earnings Calculator</h1>
-    <button onclick="copyShareableLink()">Copy Shareable Link</button>
 
     <div class="container">
+
         <div class="input-section">
             <label>1. Token Name</label>
-            <div style="position: relative; display: flex; align-items: center;">
-                <input list="tokenList" id="tokenName" placeholder="e.g., ETH" oninput="updateTokenIcon(); calculate()"
-                    style="padding-right: 40px;" />
-                <img id="tokenIcon"
-                    src="https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg"
-                    alt="Token Icon"
-                    style="position: absolute; right: 10px; width: 20px; height: 20px; pointer-events: none;" />
+            <div class="custom-dropdown big" style="width: 100%;">
+                <select id="tokenName" placeholder="Custom">
+                    <option value="">Custom</option>
+                </select>
             </div>
 
-            <datalist id="tokenList">
-                <option value="ETH">
-                <option value="BTC">
-                <option value="USDC">
-            </datalist>
 
-            <label>2. $ Estimated Daily Volume (in Millions)</label>
+            <label>$ Estimated Daily Volume (in Millions)</label>
             <input type="number" id="volume" placeholder="e.g., 1.5" step="0.01" min="0" oninput="calculate()" />
 
-            <label>3. Total BPS (Open + Close)</label>
+            <label>Total BPS (Open + Close)</label>
             <input type="number" id="bps" value="20" placeholder="e.g., 20" step="1" min="0" oninput="calculate()" />
 
-            <label>4. Referral Fee (%)</label>
+            <label>Referral Fee</label> <span id="referralValue">10%</span>
             <input type="range" id="referralFee" value="10" min="0" max="10" step="1"
                 oninput="document.getElementById('referralValue').textContent = this.value + '%'; calculate();" />
-            <span id="referralValue">10%</span>
 
-            <label>5. Token Buyback (%)</label>
+
+            <label>Token Buyback</label> <span id="buybackValue">0%</span>
             <input type="range" id="buyback" value="0" min="0" max="90" step="1"
                 oninput="document.getElementById('buybackValue').textContent = this.value + '%'; calculate();" />
-            <span id="buybackValue">0%</span>
-
-            <button onclick="Refresh()">Refresh</button>
 
 
 
 
 
-            <label>6. Liquidated Notional (%)</label>
+
+
+            <label>Liquidated Notional</label> <span id="liquidatedNotionalValue">3%</span>
             <input type="range" id="liquidatedNotional" value="3" min="0" max="100" step="0.1"
                 oninput="document.getElementById('liquidatedNotionalValue').textContent = this.value + '%'; calculate();" />
-            <span id="liquidatedNotionalValue">3%</span>
 
-            <label>7. Avg Leverage</label>
+
+            <label>Avg Leverage</label>
             <input type="number" id="avgLeverage" value="20" step="1" min="1" oninput="calculate()" />
 
-            <label>8. Maintenance Margin Steps (%)</label>
+            <label>Maintenance Margin Steps </label> <span id="maintenanceMarginStepsValue">1%</span>
             <input type="range" id="maintenanceMarginSteps" value="1" min="0" max="100" step="0.1"
                 oninput="document.getElementById('maintenanceMarginStepsValue').textContent = this.value + '%'; calculate();" />
-            <span id="maintenanceMarginStepsValue">1%</span>
 
-            <label>9. Avg Funding (%)</label>
+
+            <label>Avg Funding</label> <span id="avgFundingValue">3%</span>
             <input type="range" id="avgFunding" value="30" min="25" max="100" step="0.1"
                 oninput="document.getElementById('avgFundingValue').textContent = this.value + '%'; calculate();" />
-            <span id="avgFundingValue">3%</span>
 
-            <label>10. Avg OI (%)</label>
+
+            <label>Avg OI</label> <span id="avgOIValue">100%</span>
             <input type="range" id="avgOI" value="100" min="0" max="1000" step="1"
                 oninput="document.getElementById('avgOIValue').textContent = this.value + '%'; calculate();" />
-            <span id="avgOIValue">100%</span>
+
 
         </div>
 
+        <button onclick="Refresh()">Refresh</button>
 
         <div class="output-section">
             <p><strong>Calculated LP Share:</strong> <span id="lpSharePercent">–</span></p>
@@ -185,14 +187,225 @@
             <p><strong>Final LP Share Value:</strong> <span id="lpShareLow">–</span> → <span id="lpShareHigh">–</span>
             </p>
         </div>
+        <h2>Debug / Calculation Details</h2>
+        <p><strong>avgLvg:</strong> <span id="avgLvgVal">–</span></p>
+        <p><strong>lpShare:</strong> <span id="lpShareVal">–</span></p>
+        <p><strong>monthlyVolume:</strong> <span id="monthlyVolumeVal">–</span></p>
+        <p><strong>totalPerpSolverFees:</strong> <span id="solverFeesVal">–</span></p>
+        <p><strong>totalPerpProtocolFees:</strong> <span id="protocolFeesVal">–</span></p>
+        <p><strong>totalLiquidatedNotional:</strong> <span id="totalLiquidatedNotionalVal">–</span></p>
+        <p><strong>collateralProvided:</strong> <span id="collateralVal">–</span></p>
+        <p><strong>PlattformFeesEarntFrontEnd:</strong> <span id="platformFeeVal">–</span></p>
+        <p><strong>solverFeesEarnt:</strong> <span id="solverEarnedVal">–</span></p>
+        <p><strong>avgMaintenanceMargin:</strong> <span id="maintenanceMarginVal">–</span></p>
 
     </div>
+    <script type="module">
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            getDocs,
+            collection
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkG7e5e7NvE37gQEIS4YyJJBekdIXqS18",
+            authDomain: "superflow-calculator.firebaseapp.com",
+            projectId: "superflow-calculator",
+            storageBucket: "superflow-calculator.firebasestorage.app",
+            messagingSenderId: "591440878146",
+            appId: "1:591440878146:web:009b2cfe257cb63951abdb",
+            measurementId: "G-FCW237B4MY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadPreset(token) {
+            const ref = doc(db, "presets", token);
+            const snap = await getDoc(ref);
+            if (!snap.exists()) return alert("Preset not found");
+            const data = snap.data();
+
+            for (const key in data) {
+                const el = document.getElementById(key);
+                if (el) {
+                    el.value = data[key];
+                    el.style.opacity = 0.5;
+                }
+            }
 
 
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+            calculate();
+        }
+
+        async function handlePresetOrCustom() {
+            const token = document.getElementById("tokenName").value.trim().toUpperCase();
+            const refreshButton = document.querySelector("button");
+
+            if (!token) {
+                refreshButton.style.display = "inline-block"; // Show Refresh
+
+                const fields = [
+                    "volume", "bps", "referralFee", "buyback", "liquidatedNotional",
+                    "avgLeverage", "maintenanceMarginSteps", "avgFunding", "avgOI"
+                ];
+
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.disabled = false;
+                        el.style.opacity = 1;
+                        el.style.pointerEvents = "auto";
+
+
+
+                        el.value = el.defaultValue;
+                    }
+
+
+                    const label = document.getElementById(id + "Value");
+                    if (label) {
+                        label.textContent = el?.type === 'range' ? (el?.defaultValue + '%') : '';
+                    }
+                });
+
+                const outputIds = [
+                    'feeLow', 'feeHigh', 'mmLow', 'mmHigh', 'fundingLow', 'fundingHigh',
+                    'solverRevenueLow', 'solverRevenueHigh',
+                    'solverManageLow', 'solverManageHigh',
+                    'referralLow', 'referralHigh',
+                    'buybackLow', 'buybackHigh',
+                    'subtractionsLow', 'subtractionsHigh',
+                    'lpShareLow', 'lpShareHigh',
+                    'lpSharePercent'
+                ];
+
+                outputIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = '–';
+                });
+
+                return;
+            }
+
+            // Token is selected — hide Refresh
+            refreshButton.style.display = "none";
+
+            const ref = doc(db, "presets", token);
+            const snap = await getDoc(ref);
+            if (!snap.exists()) return;
+
+            const data = snap.data();
+            const fields = [
+                "volume", "bps", "referralFee", "buyback", "liquidatedNotional",
+                "avgLeverage", "maintenanceMarginSteps", "avgFunding", "avgOI"
+            ];
+
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = data[id] ?? '';
+                    el.disabled = true;
+                    el.style.opacity = 0.5;
+                    el.style.pointerEvents = "none";
+                }
+
+
+            });
+
+            calculate();
+        }
+
+
+
+
+        async function populateTokenDropdown() {
+            const select = document.getElementById("tokenName");
+            select.innerHTML = ''; // Clear existing
+
+            const options = [
+                {
+                    value: '',
+                    text: 'Custom',
+                    icon: ''
+                }
+            ];
+
+            const snapshot = await getDocs(collection(db, "presets"));
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                options.push({
+                    value: doc.id,
+                    text: doc.id,
+                    icon: data.icon || "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg"
+                });
+            });
+
+            const tomSelect = new TomSelect(select, {
+                options: options,
+                render: {
+                    option: function (data, escape) {
+                        return `<div style="display:flex;align-items:center;">
+                    ${data.icon ? `<img src="${escape(data.icon)}" style="width:18px;height:18px;margin-right:6px;" />` : ''}
+                    <span>${escape(data.text)}</span>
+                </div>`;
+                    },
+                    item: function (data, escape) {
+                        return `<div style="display:flex;align-items:center;">
+                    ${data.icon ? `<img src="${escape(data.icon)}" style="width:18px;height:18px;margin-right:6px;" />` : ''}
+                    <span>${escape(data.text)}</span>
+                </div>`;
+                    }
+                },
+                onChange: (value) => {
+                    handlePresetOrCustom();
+                    calculate();
+                    tomSelect.blur();
+                }
+            });
+
+            // 🔥 This sets the dropdown value via TomSelect if ?apx= is in the URL
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('apx')) {
+                tomSelect.setValue(params.get('apx').toUpperCase());
+            }
+        }
+
+
+        const urlToken = new URLSearchParams(window.location.search).get("token");
+        if (urlToken) loadPreset(urlToken);
+
+        window.onload = function () {
+            populateTokenDropdown().then(() => {
+                handlePresetOrCustom();
+                calculate();
+
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('locked') === 'true') {
+                    disableInputsIfLocked();
+                }
+            });
+        };
+
+
+
+
+        window.handlePresetOrCustom = handlePresetOrCustom;
+
+    </script>
+
+
 
     <script>
+
+
 
         function disableInputsIfLocked() {
             const params = new URLSearchParams(window.location.search);
@@ -200,7 +413,7 @@
                 const inputs = document.querySelectorAll('input, select');
                 inputs.forEach(el => {
                     el.disabled = true;
-                    el.style.opacity = '0.5';
+                    el.style.opacity = '0.8';
                     el.style.pointerEvents = 'none';
                 });
 
@@ -210,58 +423,21 @@
                     button.style.display = 'none';
                 });
             }
+            disableInputsForPreset();
+        }
+
+        function disableInputsForPreset() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(el => {
+                el.disabled = true;
+                el.style.opacity = '0.8';
+                el.style.pointerEvents = 'none';
+            });
+
         }
 
 
-        window.onload = function () {
-            const params = new URLSearchParams(window.location.search);
-            // Load all fields (same as you already do)
-            if (params.has('token')) document.getElementById('tokenName').value = params.get('token');
-            if (params.has('volume')) document.getElementById('volume').value = params.get('volume');
-            if (params.has('bps')) document.getElementById('bps').value = params.get('bps');
-            if (params.has('referral')) {
-                document.getElementById('referralFee').value = params.get('referral');
-                document.getElementById('referralValue').textContent = params.get('referral') + '%';
-            }
-            if (params.has('buyback')) {
-                document.getElementById('buyback').value = params.get('buyback');
-                document.getElementById('buybackValue').textContent = params.get('buyback') + '%';
-            }
-            if (params.has('liquidatedNotional')) {
-                document.getElementById('liquidatedNotional').value = params.get('liquidatedNotional');
-                document.getElementById('liquidatedNotionalValue').textContent = params.get('liquidatedNotional') + '%';
-            }
-            if (params.has('avgLeverage')) document.getElementById('avgLeverage').value = params.get('avgLeverage');
-            if (params.has('maintenanceMarginSteps')) {
-                document.getElementById('maintenanceMarginSteps').value = params.get('maintenanceMarginSteps');
-                document.getElementById('maintenanceMarginStepsValue').textContent = params.get('maintenanceMarginSteps') + '%';
-            }
-            if (params.has('avgFunding')) {
-                document.getElementById('avgFunding').value = params.get('avgFunding');
-                document.getElementById('avgFundingValue').textContent = params.get('avgFunding') + '%';
-            }
-            if (params.has('avgOI')) {
-                document.getElementById('avgOI').value = params.get('avgOI');
-                document.getElementById('avgOIValue').textContent = params.get('avgOI') + '%';
-            }
 
-            updateTokenIcon();
-            calculate();
-            disableInputsIfLocked();
-        }
-
-        function updateTokenIcon() {
-            const token = document.getElementById("tokenName").value.toUpperCase();
-            const iconMap = {
-                ETH: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd87d91c8ab5fc1efdbaa_ethereum-eth-logo-diamond-purple.svg",
-                BTC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682ccadc604c4335a653305c_BTCicon.svg",
-                USDC: "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682dd8a61357199af865b614_usd-coin-usdc-logo.svg",
-            };
-
-            const defaultIcon = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
-            const iconURL = iconMap[token] || defaultIcon;
-            document.getElementById("tokenIcon").src = iconURL;
-        }
 
         function Refresh() {
             // Reset input values
@@ -289,6 +465,7 @@
             document.getElementById('avgOI').value = 100;
             document.getElementById('avgOIValue').textContent = '100%';
 
+
             // Reset output values
             const outputIds = [
                 'feeLow', 'feeHigh', 'mmLow', 'mmHigh', 'fundingLow', 'fundingHigh',
@@ -305,8 +482,6 @@
                 document.getElementById(id).textContent = '–';
             });
 
-            document.getElementById("tokenIcon").src = "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
-
 
         }
 
@@ -320,8 +495,11 @@
 
 
         function calculate() {
-            //inputs 
+
             const volume = parseFloat(document.getElementById('volume').value);
+
+
+
             const bps = parseFloat(document.getElementById('bps').value);
             const referralFee = parseFloat(document.getElementById('referralFee').value) * 0.01;
             const buyback = parseFloat(document.getElementById('buyback').value) * 0.01;
@@ -334,46 +512,49 @@
 
 
             //calculations
+            var avgLvg = avgLeverage * 100000;
+
             var lpShare = 0.85 - referralFee;
-            let monthlyVolume = volume * 30;
-            let totalPerpSolverFees = bps * 0.6;
-            let totalPerpProtocolFees = bps * 0.4;
-            let totalLiquidatedNotional = monthlyVolume * 1000000 * liquidatedNotional;
-            let collateralProvided = totalLiquidatedNotional / avgLeverage;
-            let PlattformFeesEarntFrontEnd = monthlyVolume * 1000000 * (totalPerpProtocolFees / 10000);
-            let solverFeesEarnt = monthlyVolume * 1000000 * (totalPerpSolverFees / 10000);
-            let avgMaintenanceMargin = avgLeverage * maintenanceMarginSteps;
+            var monthlyVolume = volume * 30;
+            var totalPerpSolverFees = bps * 0.6;
+            var totalPerpProtocolFees = bps * 0.4;
+            var totalLiquidatedNotional = monthlyVolume * 1000000 * liquidatedNotional;
+            var collateralProvided = totalLiquidatedNotional / avgLvg;
+
+            var PlattformFeesEarntFrontEnd = monthlyVolume * 1000000 * (totalPerpProtocolFees / 10000);
+            var solverFeesEarnt = monthlyVolume * 1000000 * (totalPerpSolverFees / 10000);
+            var avgMaintenanceMargin = avgLvg * maintenanceMarginSteps;
 
 
-            let liquidationFeeEarntLowerBound = collateralProvided * avgMaintenanceMargin;
-            let liquidationFeeEarntUpperBound = (solverFeesEarnt + PlattformFeesEarntFrontEnd) * 0.3333;
+            var liquidationFeeEarntLowerBound = collateralProvided * avgMaintenanceMargin;
+            var liquidationFeeEarntUpperBound = (solverFeesEarnt + PlattformFeesEarntFrontEnd) * 0.3333;
 
-            let fundingLow = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.2;
-            let fundingHigh = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.75;
+            var fundingLow = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.2;
+            var fundingHigh = avgOI * avgFunding * 0.01 * (1 / 12) * 10000000 * 0.75;
 
-            let feeLow = solverFeesEarnt;
-            let feeHigh = solverFeesEarnt;
+            var feeLow = solverFeesEarnt;
+            var feeHigh = solverFeesEarnt;
 
-            let mmLow = liquidationFeeEarntLowerBound;
-            let mmHigh = liquidationFeeEarntUpperBound;
+            var mmLow = liquidationFeeEarntLowerBound;
+            var mmHigh = liquidationFeeEarntUpperBound;
 
-            let solverRevenueLow = feeLow + mmLow + fundingLow;
-            let solverRevenueHigh = feeHigh + mmHigh + fundingHigh;
+            var solverRevenueLow = feeLow + mmLow + fundingLow;
+            var solverRevenueHigh = feeHigh + mmHigh + fundingHigh;
 
-            let solverManageLow = solverRevenueLow * (1 - (lpShare + referralFee));
-            let solverManageHigh = solverRevenueHigh * (1 - (lpShare + referralFee));
+            var solverManageLow = solverRevenueLow * (1 - (lpShare + referralFee));
+            var solverManageHigh = solverRevenueHigh * (1 - (lpShare + referralFee));
 
-            let referralLow = solverRevenueLow * referralFee;
-            let referralHigh = solverRevenueHigh * referralFee;
+            var referralLow = solverRevenueLow * referralFee;
+            var referralHigh = solverRevenueHigh * referralFee;
 
-            let buybackLow = (solverRevenueLow - referralLow - solverManageLow) * buyback;
-            let buybackHigh = (solverRevenueHigh - referralHigh - solverManageHigh) * buyback;
+            var buybackLow = (solverRevenueLow - referralLow - solverManageLow) * buyback;
+            var buybackHigh = (solverRevenueHigh - referralHigh - solverManageHigh) * buyback;
 
-            let subtractionsLow = buybackLow + referralLow + solverManageLow;
-            let subtractionsHigh = buybackHigh + referralHigh + solverManageHigh;
+            var subtractionsLow = buybackLow + referralLow + solverManageLow;
+            var subtractionsHigh = buybackHigh + referralHigh + solverManageHigh;
 
-            let lpShareLow = solverRevenueLow - (buybackLow + referralLow + solverManageLow);
-            let lpShareHigh = solverRevenueHigh - (buybackHigh + referralHigh + solverManageHigh);
+            var lpShareLow = solverRevenueLow - (buybackLow + referralLow + solverManageLow);
+            var lpShareHigh = solverRevenueHigh - (buybackHigh + referralHigh + solverManageHigh);
 
 
 
@@ -383,6 +564,14 @@
                 return;
             }
 
+            // Validate all critical inputs
+            if (
+                isNaN(volume) || isNaN(bps) || isNaN(liquidatedNotional) ||
+                isNaN(avgLeverage) || avgLeverage === 0
+            ) {
+                console.warn("Invalid input detected. Skipping calculations.");
+                return;
+            }
             document.getElementById('feeLow').textContent = formatNumberDollar(feeLow);
             document.getElementById('feeHigh').textContent = formatNumberDollar(feeHigh);
             document.getElementById('mmLow').textContent = formatNumberDollar(mmLow);
@@ -401,33 +590,28 @@
 
             document.getElementById('lpSharePercent').textContent = lpShare * 100 + "%";
 
+
+
+            document.getElementById('avgLvgVal').textContent = formatNumberDollar(avgLvg);
+            document.getElementById('lpShareVal').textContent = (lpShare * 100).toFixed(2) + "%";
+            document.getElementById('monthlyVolumeVal').textContent = monthlyVolume.toLocaleString();
+            document.getElementById('solverFeesVal').textContent = totalPerpSolverFees.toFixed(2);
+            document.getElementById('protocolFeesVal').textContent = totalPerpProtocolFees.toFixed(2);
+            console.log(totalLiquidatedNotional);
+
+            document.getElementById('totalLiquidatedNotionalVal').textContent = formatNumberDollar(totalLiquidatedNotional);
+            document.getElementById('collateralVal').textContent = formatNumberDollar(collateralProvided);
+            document.getElementById('platformFeeVal').textContent = formatNumberDollar(PlattformFeesEarntFrontEnd);
+            document.getElementById('solverEarnedVal').textContent = formatNumberDollar(solverFeesEarnt);
+            document.getElementById('maintenanceMarginVal').textContent = avgMaintenanceMargin.toFixed(2) + "%";
+
+
+
             document.getElementById('buybackHigh').textContent = formatNumberDollar(buybackHigh);
             document.getElementById('lpShareLow').textContent = formatNumberDollar(lpShareLow);
             document.getElementById('lpShareHigh').textContent = formatNumberDollar(lpShareHigh);
+
         }
-
-
-        function copyShareableLink() {
-            const token = encodeURIComponent(document.getElementById('tokenName').value);
-            const volume = encodeURIComponent(document.getElementById('volume').value);
-            const bps = encodeURIComponent(document.getElementById('bps').value);
-            const referral = encodeURIComponent(document.getElementById('referralFee').value);
-            const buyback = encodeURIComponent(document.getElementById('buyback').value);
-            const liquidatedNotional = encodeURIComponent(document.getElementById('liquidatedNotional').value);
-            const avgLeverage = encodeURIComponent(document.getElementById('avgLeverage').value);
-            const maintenanceMarginSteps = encodeURIComponent(document.getElementById('maintenanceMarginSteps').value);
-            const avgFunding = encodeURIComponent(document.getElementById('avgFunding').value);
-            const avgOI = encodeURIComponent(document.getElementById('avgOI').value);
-
-            const url = `${location.origin}${location.pathname}?token=${token}&volume=${volume}&bps=${bps}&referral=${referral}&buyback=${buyback}&liquidatedNotional=${liquidatedNotional}&avgLeverage=${avgLeverage}&maintenanceMarginSteps=${maintenanceMarginSteps}&avgFunding=${avgFunding}&avgOI=${avgOI}&locked=true`;
-
-            navigator.clipboard.writeText(url).then(() => {
-                alert("Locked link copied to clipboard!");
-            }).catch(() => {
-                alert("Failed to copy link.");
-            });
-        }
-
 
     </script>
 </body>

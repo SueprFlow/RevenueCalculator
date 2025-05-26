@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Token Preset Manager</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 40px;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            z-index: 9999;
+            display: none;
+        }
+
+        .layout {
+            display: flex;
+            gap: 40px;
+        }
+
+        .panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .token-list {
+            flex: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .token-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            min-width: 120px;
+            transition: background 0.2s ease;
+        }
+
+        .token-card.selected {
+            background: #fff9c4 !important;
+            /* Light yellow */
+            border-color: #fdd835;
+        }
+
+        .token-card:hover {
+            background: #eef2ff;
+        }
+
+        input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #111;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        #iconPreview {
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingOverlay">Loading...</div>
+
+    <div class="layout">
+        <!-- Left Panel -->
+        <div class="panel">
+            <h2>Add New Token</h2>
+            <img id="iconPreview" src="" alt="Icon Preview" style="width:40px; height:40px; display:none;" />
+            <input id="newTokenName" placeholder="New Token Name (e.g., BONK)" />
+            <button onclick="addNewToken()">Add New Token</button>
+
+            <hr style="margin: 20px 0;" />
+
+            <h2>Edit Token Preset</h2>
+            <div id="editor" style="display:none;">
+                <!-- Existing normal inputs -->
+                <input id="volume" placeholder="Daily Volume" />
+                <input id="bps" placeholder="BPS" />
+
+                <!-- Sliders with % labels -->
+                <label>Referral Fee: <span id="referralLabel">0%</span></label>
+                <input type="range" id="referral" min="0" max="10" value="0" />
+
+                <label>Buyback: <span id="buybackLabel">0%</span></label>
+                <input type="range" id="buyback" min="0" max="90" value="0" />
+
+                <label>Liquidated Notional: <span id="liquidatedNotionalLabel">0%</span></label>
+                <input type="range" id="liquidatedNotional" min="0" max="100" value="0" />
+
+                <input id="avgLeverage" placeholder="Avg Leverage" />
+
+                <label>Maintenance Margin Steps: <span id="maintenanceMarginStepsLabel">0%</span></label>
+                <input type="range" id="maintenanceMarginSteps" min="0" max="100" value="0" />
+
+                <label>Avg Funding: <span id="avgFundingLabel">0%</span></label>
+                <input type="range" id="avgFunding" min="0" max="100" value="0" />
+
+                <label>Avg OI: <span id="avgOILabel">0%</span></label>
+                <input type="range" id="avgOI" min="0" max="100" value="0" />
+
+                <input id="icon" placeholder="Icon URL" oninput="updateIconPreview()" />
+
+                <button onclick="savePreset()">Save</button>
+            </div>
+            <button id="deleteButton" onclick="deletePreset()"
+                style="background:#c62828; margin-left:10px;">Delete</button>
+
+
+        </div>
+
+        <!-- Right Panel (Token List) -->
+        <div class="panel">
+            <h2>All Tokens</h2>
+            <div id="tokenList" class="token-list"></div>
+        </div>
+        <button id="generateLinkBtn" onclick="generateTokenLink()" style="margin-left:10px;">Generate Token
+            Link</button>
+
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/cryptocoins-icons@2.9.0/gulpfile.min.js"></script>
+<img src="img/BTC.svg" alt="Bitcoin">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            getDocs,
+            deleteDoc,
+            collection
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkG7e5e7NvE37gQEIS4YyJJBekdIXqS18",
+            authDomain: "superflow-calculator.firebaseapp.com",
+            projectId: "superflow-calculator",
+            storageBucket: "superflow-calculator.firebasestorage.app",
+            messagingSenderId: "591440878146",
+            appId: "1:591440878146:web:009b2cfe257cb63951abdb",
+            measurementId: "G-FCW237B4MY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let selectedToken = "";
+
+        const fields = [
+            "volume", "bps", "referral", "buyback", "liquidatedNotional",
+            "avgLeverage", "maintenanceMarginSteps", "avgFunding", "avgOI", "icon"
+        ];
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        async function loadTokenList() {
+            showLoading();
+            const tokenList = document.getElementById("tokenList");
+            tokenList.innerHTML = '';
+
+            const snapshot = await getDocs(collection(db, "presets"));
+            snapshot.forEach(docSnap => {
+                const token = docSnap.id;
+                const data = docSnap.data();
+
+                const card = document.createElement("div");
+                card.className = "token-card";
+                if (selectedToken === token) {
+                    card.classList.add("selected");
+                }
+
+                card.onclick = async () => {
+                    selectedToken = token;
+                    await loadPreset(token);
+                    document.getElementById("deleteButton").disabled = false;
+                    highlightSelectedToken(token);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const icon = document.createElement("img");
+                icon.src = data.icon || "https://cdn.prod.website-files.com/6821e2dd420215db85312256/682cc853d011ff1c4b054ee2_Default.svg";
+                icon.alt = token + " icon";
+                icon.style.width = "24px";
+                icon.style.height = "24px";
+
+                const label = document.createElement("span");
+                label.textContent = token;
+
+                card.appendChild(icon);
+                card.appendChild(label);
+                card.setAttribute("data-token", token); // for later selection
+                tokenList.appendChild(card);
+            });
+
+            hideLoading();
+        }
+
+        function highlightSelectedToken(token) {
+            document.querySelectorAll('.token-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.getAttribute("data-token") === token) {
+                    card.classList.add('selected');
+                }
+            });
+        }
+
+        async function loadPreset(token) {
+            showLoading();
+            const ref = doc(db, "presets", token);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                const data = snap.data();
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = data[id] || '';
+
+                    const label = document.getElementById(id + "Label");
+                    if (label) {
+                        label.textContent = (data[id] || 0) + "%";
+                    }
+                    el.value = (data[id] ?? defaultValueForThatField).toString();
+
+                });
+
+                document.getElementById("editor").style.display = "block";
+                document.getElementById("deleteButton").disabled = false;
+                updateIconPreview();
+            }
+            hideLoading();
+        }
+
+        window.generateTokenLink = function () {
+            if (!selectedToken) {
+                alert("No token selected.");
+                return;
+            }
+
+            const calculatorPath = "/revenue-calculator"; // 👈 set your subdirectory path here
+            const url = `${location.origin}${calculatorPath}?apx=${encodeURIComponent(selectedToken)}`;
+
+            navigator.clipboard.writeText(url)
+                .then(() => alert(`Link copied:\n${url}`))
+                .catch(() => alert("Failed to copy link."));
+        };
+
+
+        function setupSliderSync() {
+            const sliders = [
+                "referral",
+                "buyback",
+                "liquidatedNotional",
+                "maintenanceMarginSteps",
+                "avgFunding",
+                "avgOI"
+            ];
+
+            sliders.forEach(id => {
+                const input = document.getElementById(id);
+                const label = document.getElementById(id + "Label");
+
+                if (input && label) {
+                    input.addEventListener("input", () => {
+                        label.textContent = input.value + "%";
+                    });
+                }
+            });
+        }
+
+
+        window.savePreset = async function () {
+            if (!selectedToken) {
+                alert("No token selected.");
+                return;
+            }
+
+            const data = {};
+            fields.forEach(id => {
+                const val = document.getElementById(id).value;
+                data[id] = isNaN(val) || val === '' ? val : parseFloat(val);
+            });
+            data.token = selectedToken;
+
+            await setDoc(doc(db, "presets", selectedToken), data);
+            await loadTokenList(); // refresh UI icons/cards
+            highlightSelectedToken(selectedToken);
+            alert("Saved!");
+        };
+
+
+        window.deletePreset = async function () {
+            if (!selectedToken) {
+                alert("No token selected.");
+                return;
+            }
+
+            const confirmDelete = confirm(`Are you sure you want to delete ${selectedToken}?`);
+            if (!confirmDelete) return;
+
+            await deleteDoc(doc(db, "presets", selectedToken));
+
+            selectedToken = "";
+            document.getElementById("editor").style.display = "none";
+            await loadTokenList();
+            alert("Token deleted.");
+        };
+
+
+        window.addNewToken = async function () {
+            const newToken = document.getElementById("newTokenName").value.trim().toUpperCase();
+            if (!newToken) {
+                alert("Please enter a token name.");
+                return;
+            }
+
+            const newPreset = {
+                token: newToken,
+                volume: 0,
+                bps: 20,
+                referral: 0,
+                buyback: 0,
+                liquidatedNotional: 3,
+                avgLeverage: 20,
+                maintenanceMarginSteps: 1,
+                avgFunding: 3,
+                avgOI: 100,
+                icon: ""
+            };
+
+            await setDoc(doc(db, "presets", newToken), newPreset);
+            selectedToken = newToken;
+
+            document.getElementById("newTokenName").value = "";
+            await loadTokenList();
+            await loadPreset(newToken);
+            highlightSelectedToken(newToken);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+
+        window.updateIconPreview = function () {
+            const url = document.getElementById("icon").value;
+            const img = document.getElementById("iconPreview");
+            if (url) {
+                img.src = url;
+                img.style.display = 'inline-block';
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+
+        loadTokenList();
+        setupSliderSync();
+        document.getElementById("icon").addEventListener("input", updateIconPreview);
+
+    </script>
+
+
+</html>
